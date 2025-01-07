@@ -1,6 +1,6 @@
 import pandas as pd
-from django.core.management.base import BaseCommand
 from api.models import Ingredient
+from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
@@ -21,10 +21,10 @@ class Command(BaseCommand):
                 )
                 if created:
                     self.stdout.write(self.style.SUCCESS(
-                        f'Ingredient "{ingredient.name}" imported successfully!'))
+                        f'Ingred "{ingredient.name}" imported successfully!'))
                 else:
                     self.stdout.write(self.style.WARNING(
-                        f'Ingredient "{ingredient.name}" already exists.'))
+                        f'Ingred "{ingredient.name}" already exists.'))
             except Exception as e:
                 self.stdout.write(self.style.ERROR(
                     f'Error importing ingredient "{row[0]}": {str(e)}'))

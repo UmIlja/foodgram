@@ -1,37 +1,29 @@
 import csv
+
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
-from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, status, viewsets
+from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound
-from rest_framework import filters, status, viewsets
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.authtoken.models import Token
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
 
 from .filters import RecipesFilter
-from .models import (
-    FavoriteRecipe, Ingredient, Recipe, ShoppingCart, Subscription, Tag)
+from .models import (FavoriteRecipe, Ingredient, Recipe, ShoppingCart,
+                     Subscription, Tag)
 from .permissions import IsAuthorOrAuthOrReadOnlyPermission
-from .serializers import (
-    IngredientSerializer,
-    TagSerializer,
-    FullRecipeSerializer,
-    WriteRecipeSerializer,
-    RecipeMinifiedSerializer,
-    ShoppingCartSerializer,
-    SubscribeSerializer,
-    SubscriptionWithRecipesSerializer,
-    UserSerializer,
-    UserRegistrationSerializer,
-    UserDetailSerializer,
-    UserAvatarSerializer,
-    UserChangePasswordSerializer,
-    TokenSerializer,
-)
-
+from .serializers import (FullRecipeSerializer, IngredientSerializer,
+                          RecipeMinifiedSerializer, ShoppingCartSerializer,
+                          SubscribeSerializer,
+                          SubscriptionWithRecipesSerializer, TagSerializer,
+                          TokenSerializer, UserAvatarSerializer,
+                          UserChangePasswordSerializer, UserDetailSerializer,
+                          UserRegistrationSerializer, UserSerializer,
+                          WriteRecipeSerializer)
 
 User = get_user_model()
 

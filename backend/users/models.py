@@ -1,9 +1,9 @@
+from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
-from django.contrib.auth.models import AbstractUser
 from rest_framework import serializers
 
-from .constants import (EMAIL_MAX_LENGTH, NAME_MAX_LENGTH, USERNAME_REGEX)
+from .constants import EMAIL_MAX_LENGTH, NAME_MAX_LENGTH, USERNAME_REGEX
 
 
 class CustomUser(AbstractUser):

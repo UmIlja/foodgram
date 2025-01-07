@@ -1,19 +1,12 @@
 import base64
 import imghdr
 
+from django.contrib.auth.password_validation import validate_password
 from django.core.files.base import ContentFile
 from rest_framework import serializers
-from django.contrib.auth.password_validation import validate_password
 
-from .models import (
-    User,
-    Ingredient,
-    Tag,
-    Recipe,
-    IngredientRecipe,
-    FavoriteRecipe,
-    ShoppingCart,
-    Subscription)
+from .models import (FavoriteRecipe, Ingredient, IngredientRecipe, Recipe,
+                     ShoppingCart, Subscription, Tag, User)
 
 
 class Base64ImageField(serializers.ImageField):
