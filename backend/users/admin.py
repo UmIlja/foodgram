@@ -4,7 +4,7 @@ from django.utils.safestring import mark_safe
 from rest_framework.authtoken.models import Token
 
 from .models import UserProfile
-from api.models import Ingredient, IngredientRecipe, Recipe, Tag
+from backend.api.models import Ingredient, IngredientRecipe, Recipe, Tag
 
 try:
     admin.site.unregister(Token)
