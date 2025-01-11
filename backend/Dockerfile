@@ -11,6 +11,9 @@ RUN pip install -r requirements.txt --no-cache-dir
 # той директории локального компьютера, где сохранён Dockerfile,
 # в текущую рабочую директорию образа — /app.
 COPY . .
-
-# При старте контейнера запустить сервер разработки.
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "foodgram_backend.wsgi"]
+# Выполняем миграции
+RUN python manage.py migrate
+# Собираем статические файлы
+RUN python manage.py collectstatic --noinput
+# Команда для запуска Gunicorn
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "foodgram_backend.wsgi:application"]

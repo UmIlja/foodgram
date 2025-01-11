@@ -93,7 +93,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         try:
             recipe = self.get_object()  # Получаем рецепт по id
             # Генерируем короткую ссылку
-            short_link = f"{settings.BASE_URL}/s/{recipe.id}"
+            short_link = f"{settings.BASE_URL}/api/recipes/{recipe.id}"
             return Response({"short-link": short_link},
                             status=status.HTTP_200_OK)
         except Recipe.DoesNotExist:

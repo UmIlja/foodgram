@@ -19,7 +19,7 @@ services:
     depends_on:
       - db
     volumes:
-      - static:/static
+      - static:/app/static
       - media:/media
 
   frontend:
@@ -27,19 +27,7 @@ services:
     env_file: .env
     command: cp -r /app/build/. /static/
     volumes:
-      - static:/static
-    #command: cp -r /app/build/. /frontend_static/
-    #volumes:
-    #  - ../frontend/:/app/result_build/
-
-  #nginx:
-  #  image: nginx:1.25.4-alpine
-   # ports:
-   #   - "80:80"
-   # volumes:
-   #   - ./nginx.conf:/etc/nginx/conf.d/default.conf
-   #   - ../frontend/build:/usr/share/nginx/html/
-   #   - ../docs/:/usr/share/nginx/html/api/docs/
+      - static:/app/static
 
   gateway:
     image: umilja/foodgram_infra
@@ -48,7 +36,7 @@ services:
       - backend
       - frontend
     volumes:
-      - static:/static
+      - static:/app/static
       - media:/media
     ports:
       - 8000:80
