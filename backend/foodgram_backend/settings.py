@@ -10,8 +10,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'any_key')
 
-DEBUG = True  
-# os.getenv("DEBUG_MODE") == "False"
+# DEBUG = True  
+os.getenv("DEBUG_MODE") == "False"
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost').split(',')
 
@@ -69,23 +69,23 @@ BASE_URL = "https://foodgram-ilja.sytes.net"
 AUTH_USER_MODEL = 'users.UserProfile'  # Profile user model
 
 
+# DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',  # Указываем, что используем SQLite
+#        'NAME': BASE_DIR / 'db.sqlite3',  # Путь к файлу базы данных
+#    }
+#}
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',  # Указываем, что используем SQLite
-        'NAME': BASE_DIR / 'db.sqlite3',  # Путь к файлу базы данных
+        #для работы будет использоваться бэкенд postgresql
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('POSTGRES_DB', 'django'),
+        'USER': os.getenv('POSTGRES_USER', 'django'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
+        'HOST': os.getenv('db', ''),
+        'PORT': os.getenv('DB_PORT', 5432)
     }
 }
-#DATABASES = {
-#    'default': {
-#        #для работы будет использоваться бэкенд postgresql
- #       'ENGINE': 'django.db.backends.postgresql',
-  #      'NAME': os.getenv('POSTGRES_DB', 'django'),
-   #     'USER': os.getenv('POSTGRES_USER', 'django'),
-    #    'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
-     #   'HOST': os.getenv('db', ''),
-      #  'PORT': os.getenv('DB_PORT', 5432)
-    #}
-#}
 
 
 # Password validation
