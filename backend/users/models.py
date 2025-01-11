@@ -1,14 +1,13 @@
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import RegexValidator
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
-from rest_framework import serializers
 
-from .constants import EMAIL_MAX_LENGTH, NAME_MAX_LENGTH, USERNAME_REGEX
+from .constants import EMAIL_MAX_LENGTH, NAMES_FIELD_MAX_LENGTH
 
 
-class CustomUser(AbstractUser):
+class UserProfile(AbstractUser):
     """
-    Custom user model.
+    Profile user model.
     Users within the project authentication system are represented by this
     model.
     """
@@ -17,26 +16,20 @@ class CustomUser(AbstractUser):
         max_length=EMAIL_MAX_LENGTH, unique=True, blank=False, null=False
     )
     username = models.CharField(
-        max_length=NAME_MAX_LENGTH,
+        max_length=NAMES_FIELD_MAX_LENGTH,
         unique=True, blank=False, null=False,
-        validators=[RegexValidator(regex=USERNAME_REGEX)]
+        validators=[UnicodeUsernameValidator()]
     )
     first_name = models.CharField(
-        max_length=NAME_MAX_LENGTH, blank=False, null=False
+        max_length=NAMES_FIELD_MAX_LENGTH, blank=False, null=False
     )
     last_name = models.CharField(
-        max_length=150, blank=False, null=False
+        max_length=NAMES_FIELD_MAX_LENGTH, blank=False, null=False
     )
     avatar = models.ImageField(
         upload_to='users/', blank=True, null=True
     )
     is_subscribed = models.BooleanField(default=False)
-
-    def clean_username(self):
-        if self.username.lower() == 'me':
-            raise serializers.ValidationError(
-                'Имя пользователя "me" недопустимо.'
-            )
 
     class Meta:
         ordering = ('username',)

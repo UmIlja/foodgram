@@ -1,10 +1,10 @@
-from api.models import Ingredient, IngredientRecipe, Recipe, Tag
 from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.utils.safestring import mark_safe
 from rest_framework.authtoken.models import Token
 
-from .models import CustomUser
+from .models import UserProfile
+from api.models import Ingredient, IngredientRecipe, Recipe, Tag
 
 try:
     admin.site.unregister(Token)
@@ -16,13 +16,12 @@ admin.site.unregister(Group)
 admin.site.register(Tag)
 
 
-@admin.register(CustomUser)
-class CustomUserAdmin(admin.ModelAdmin):
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
 
     list_display = ('username', 'email',)
     search_fields = ('username', 'email',)
     fields = ('email', 'username', 'first_name', 'last_name', 'password')
-    # readonly_fields = ('password',)
 
 
 class IngredientInline(admin.StackedInline):

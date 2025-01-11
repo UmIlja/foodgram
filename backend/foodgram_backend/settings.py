@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_extensions',
     'django_filters',
     'rest_framework',
     'rest_framework.authtoken',
@@ -62,20 +63,29 @@ TEMPLATES = [
 WSGI_APPLICATION = 'foodgram_backend.wsgi.application'
 
 
-AUTH_USER_MODEL = 'users.CustomUser'  # Custom user model
+BASE_URL = "https://foodgram-ilja.sytes.net"
+
+
+AUTH_USER_MODEL = 'users.UserProfile'  # Profile user model
 
 
 DATABASES = {
     'default': {
-        #для работы будет использоваться бэкенд postgresql
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB', 'django'),
-        'USER': os.getenv('POSTGRES_USER', 'django'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
-        'HOST': os.getenv('DB_HOST', ''),
-        'PORT': os.getenv('DB_PORT', 5432)
+        'ENGINE': 'django.db.backends.sqlite3',  # Указываем, что используем SQLite
+        'NAME': BASE_DIR / 'db.sqlite3',  # Путь к файлу базы данных
     }
 }
+#DATABASES = {
+#    'default': {
+#        #для работы будет использоваться бэкенд postgresql
+ #       'ENGINE': 'django.db.backends.postgresql',
+  #      'NAME': os.getenv('POSTGRES_DB', 'django'),
+   #     'USER': os.getenv('POSTGRES_USER', 'django'),
+    #    'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
+     #   'HOST': os.getenv('db', ''),
+      #  'PORT': os.getenv('DB_PORT', 5432)
+    #}
+#}
 
 
 # Password validation
@@ -135,4 +145,20 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': [
       'django_filters.rest_framework.DjangoFilterBackend'
     ]
+}
+
+
+DJOSER = {
+    "LOGIN_FIELD": "email",
+    "SERIALIZERS": {
+        "user": "api.serializers.CreateSerializer",
+        "current_user": "api.serializers.MyUserSerializer",
+        "user_create": "api.serializers.CreateSerializer",
+    },
+    "PERMISSIONS": {
+        "user": ["rest_framework.permissions.AllowAny"],  # Разрешаем доступ к пользователям всем
+        "user_create": ["rest_framework.permissions.AllowAny"],  # Разрешаем регистрацию всем
+        "user_list": ["rest_framework.permissions.AllowAny"],
+        "current_user": ["rest_framework.permissions.IsAuthenticated"]
+    },
 }

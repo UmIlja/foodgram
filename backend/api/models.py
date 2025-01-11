@@ -41,7 +41,7 @@ class Tag(models.Model):
     slug = models.SlugField(
         max_length=TAG_DATA_MAX_LENGTH,
         unique=True,
-        null=True)
+        null=False)
 
     class Meta:
         ordering = ('name',)
@@ -67,7 +67,7 @@ class Recipe(models.Model):
         verbose_name='Автор рецепта',)
     image = models.ImageField(
         'Картинка готового блюда',
-        upload_to='images/recipes/')
+        upload_to='recipes/images/')
     ingredients = models.ManyToManyField(
         Ingredient,
         through='IngredientRecipe',
@@ -113,44 +113,46 @@ class IngredientRecipe(models.Model):
         return f'{self.ingredient}'
 
 
-class ShoppingCart(models.Model):
-    """Модель корзины покупок для приготовления рецепта."""
+class BaseUserAndRecipeRelation(models.Model):
+    """Базовая модель для отношений между пользователем и рецептом."""
+
     user = models.ForeignKey(User,
                              on_delete=models.CASCADE,
-                             related_name='shopping_cart')
-    recipe = models.ForeignKey(Recipe,
+                             related_name='%(class)s')
+    recipe = models.ForeignKey('Recipe',
                                on_delete=models.CASCADE,
-                               related_name='shopping_cart_items')
+                               related_name='%(class)s_items')
 
     class Meta:
-        ordering = ('recipe', 'user')
+        abstract = True
+        ordering = ('user', 'recipe')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.recipe.name}"
+
+
+class ShoppingCart(BaseUserAndRecipeRelation):
+    """Модель корзины покупок для приготовления рецепта."""
+
+    class Meta(BaseUserAndRecipeRelation.Meta):
+        verbose_name = 'Корзина покупок'
+        verbose_name_plural = 'Корзины покупок'
         constraints = [
             models.UniqueConstraint(fields=['user', 'recipe'],
                                     name='unique_shopping_cart_items')
         ]
 
-    def __str__(self):
-        return f"{self.user.username} - {self.recipe.name}"
 
-
-class FavoriteRecipe(models.Model):
+class FavoriteRecipe(BaseUserAndRecipeRelation):
     """Модель избранных рецептов у пользователя."""
-    user = models.ForeignKey(User,
-                             on_delete=models.CASCADE,
-                             related_name='favorite_recipe')
-    recipe = models.ForeignKey(Recipe,
-                               on_delete=models.CASCADE,
-                               related_name='favorite_recipe_items')
 
-    class Meta:
-        ordering = ('recipe', 'user')
+    class Meta(BaseUserAndRecipeRelation.Meta):
+        verbose_name = 'Избранный рецепт'
+        verbose_name_plural = 'Избранные рецепты'
         constraints = [
             models.UniqueConstraint(fields=['user', 'recipe'],
                                     name='unique_favorite_recipe_items')
         ]
-
-    def __str__(self):
-        return f"{self.user.username} - {self.recipe.name}"
 
 
 class Subscription(models.Model):
@@ -164,4 +166,12 @@ class Subscription(models.Model):
 
     class Meta:
         ordering = ('author', 'user')
-        unique_together = ('user', 'author')
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'author'],
+                                    name='unique_subscription'),
+            models.CheckConstraint(check=~models.Q(user=models.F('author')),
+                                   name='prevent_self_subscription')
+        ]
+
+    def __str__(self):
+        return f"{self.user.username} -> {self.author.username}"

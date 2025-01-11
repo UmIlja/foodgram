@@ -1,24 +1,12 @@
-import base64
-import imghdr
-
-from django.contrib.auth.password_validation import validate_password
-from django.core.files.base import ContentFile
+from djoser.serializers import UserCreateSerializer
+from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
 from .models import (FavoriteRecipe, Ingredient, IngredientRecipe, Recipe,
                      ShoppingCart, Subscription, Tag, User)
 
 
-class Base64ImageField(serializers.ImageField):
-    def to_internal_value(self, data):
-        if isinstance(data, str) and data.startswith('data:image'):
-            format, imgstr = data.split(';base64,')
-            ext = format.split('/')[-1]
-            data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
-        return super().to_internal_value(data)
-
-
-class UserSerializer(serializers.ModelSerializer):
+class MyUserSerializer(serializers.ModelSerializer):
     """Serializer to manage user."""
     avatar = Base64ImageField(required=False)
 
@@ -31,33 +19,12 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
-class UserRegistrationSerializer(serializers.ModelSerializer):
-    """Serializer to registration user."""
-    password = serializers.CharField(write_only=True, required=True)
-
-    class Meta:
+class CreateSerializer(UserCreateSerializer):
+    class Meta(UserCreateSerializer.Meta):
         model = User
-        fields = ('email', 'username', 'first_name', 'last_name', 'password')
-
-    def create(self, validated_data):
-        """Метод создания нового пользователя."""
-        # Удаляем 'user' из validated_data, если он есть
-        validated_data.pop('user', None)
-        user = User(**validated_data)
-        user.set_password(validated_data['password'])
-        user.save()  # Хранение пароля в зашифрованном виде
-        return user
-
-    def validate_password(self, value):
-        validate_password(value)
-        return value
-
-
-class UserDetailSerializer(serializers.ModelSerializer):
-    """Serializer to detail after registration user."""
-    class Meta:
-        model = User
-        fields = ('email', 'id', 'username', 'first_name', 'last_name')
+        fields = (
+            'email', 'id', 'username', 'first_name', 'last_name', 'password'
+        )
 
 
 class UserAvatarSerializer(serializers.Serializer):
@@ -67,38 +34,6 @@ class UserAvatarSerializer(serializers.Serializer):
     class Meta:
         model = User
         fields = ('avatar',)
-
-    def validate_avatar(self, value):
-        if isinstance(value, ContentFile):  # value экземпляр ContentFile?
-            image_type = imghdr.what(value)  # Получаем тип изображения
-            if image_type not in ['jpeg', 'png']:
-                raise serializers.ValidationError(
-                    "Поддерживаются только формат изображения JPEG, PNG.")
-            return value
-        else:
-            raise serializers.ValidationError("Неверный формат изображения.")
-
-
-class UserChangePasswordSerializer(serializers.Serializer):
-    """Serializer of user password."""
-    current_password = serializers.CharField(required=True)
-    new_password = serializers.CharField(required=True)
-
-    def validate_new_password(self, value):
-        validate_password(value)
-        return value
-
-    def validate(self, attrs):
-        user = self.context['request'].user
-        if not user.check_password(attrs['current_password']):
-            raise serializers.ValidationError(
-                {"current_password": "Неверный текущий пароль."})
-        return attrs
-
-
-class TokenSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-    password = serializers.CharField(write_only=True)
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -146,7 +81,7 @@ class RecipeMinifiedSerializer(serializers.ModelSerializer):
 
 class FullRecipeSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True)
-    author = UserSerializer(many=False)
+    author = MyUserSerializer(many=False)
     ingredients = IngredientsInRecipeFullSerializer(
         source='recipe_ingredients', many=True)
     image = Base64ImageField(required=True, allow_null=False)
@@ -201,6 +136,9 @@ class WriteRecipeSerializer(serializers.ModelSerializer):
         read_only_fields = ('author',)
 
     def validate(self, data):
+        if 'image' not in data or not data['image']:
+            raise serializers.ValidationError('Поле image обязательно.')
+
         tags = data.get('tags')
         if not tags:
             raise serializers.ValidationError(
@@ -264,11 +202,10 @@ class WriteRecipeSerializer(serializers.ModelSerializer):
         """Метод создания модели рецепта."""
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
-
-        recipe = Recipe.objects.create(**validated_data)
+        recipe = Recipe.objects.create(  # Создаем рецепт, устанавливаем автора
+            author=self.context['request'].user, **validated_data)
         recipe.tags.set(tags)
         self.create_or_update_ingredients(recipe, ingredients)
-
         return recipe
 
     def update(self, instance, validated_data):
@@ -321,7 +258,6 @@ class SubscribeSerializer(serializers.Serializer):
     def validate_author_id(self, value):
         request = self.context.get('request')
         user = request.user
-
         if user.id == value:
             raise serializers.ValidationError(
                 "Нельзя подписаться на самого себя.")
@@ -350,6 +286,17 @@ class SubscriptionWithRecipesSerializer(serializers.ModelSerializer):
             return Subscription.objects.filter(
                 user=request.user, author=obj).exists()
         return False
+
+    def get_recipes_with_limit(self, recipes, recipes_limit):
+        """Метод для ограничения количества рецептов."""
+        if recipes_limit is not None:
+            try:
+                recipes_limit = int(recipes_limit)
+                return recipes[:recipes_limit]
+            except ValueError:
+                raise serializers.ValidationError(
+                    "Некорректное значение для recipes_limit.")
+        return recipes
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
