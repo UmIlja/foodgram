@@ -6,6 +6,7 @@ from rest_framework.authtoken.models import Token
 from .models import UserProfile
 from backend.api.models import Ingredient, IngredientRecipe, Recipe, Tag
 
+
 try:
     admin.site.unregister(Token)
 except admin.sites.NotRegistered:
