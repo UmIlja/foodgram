@@ -10,8 +10,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'any_key')
 
-# DEBUG = True  
-os.getenv("DEBUG_MODE") == "False"
+DEBUG = True
+# os.getenv("DEBUG_MODE") == "False"
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost').split(',')
 
@@ -122,7 +122,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'  # Адрес для статических файтов
 STATIC_ROOT = BASE_DIR / 'collected_static'
-# STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / '/media'
@@ -149,11 +149,9 @@ REST_FRAMEWORK = {
 
 
 DJOSER = {
-    "LOGIN_FIELD": "email",
     "SERIALIZERS": {
-        "user": "api.serializers.CreateSerializer",
-        "current_user": "api.serializers.MyUserSerializer",
-        "user_create": "api.serializers.CreateSerializer",
+        "user": "api.serializers.FullUserSerializer",
+        "current_user": "api.serializers.FullUserSerializer",
     },
     "PERMISSIONS": {
         "user": ["rest_framework.permissions.AllowAny"],  # Разрешаем доступ к пользователям всем

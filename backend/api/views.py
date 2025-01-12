@@ -19,7 +19,7 @@ from .models import (FavoriteRecipe, Ingredient, Recipe, ShoppingCart,
                      Subscription, Tag)
 from .permissions import IsAuthorOrAuthOrReadOnlyPermission
 from .serializers import (FullRecipeSerializer, IngredientSerializer,
-                          MyUserSerializer, RecipeMinifiedSerializer,
+                          FullUserSerializer, RecipeMinifiedSerializer,
                           ShoppingCartSerializer, SubscribeSerializer,
                           SubscriptionWithRecipesSerializer, TagSerializer,
                           UserAvatarSerializer, WriteRecipeSerializer)
@@ -40,17 +40,6 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     filterset_fields = ('name',)
     search_fields = ('name',)
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        search = self.request.query_params.get('search', None)
-        if search:
-            start = queryset.filter(name__istartswith=search)
-            contain = queryset.filter(
-                name__icontains=search).exclude(name__istartswith=search)
-            queryset = start | contain  # Объединяем результаты и сортируем
-            queryset = queryset.order_by('name')
-        return queryset
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -199,7 +188,7 @@ class UsersViewSet(UserViewSet):
     Можем подписаться/отписаться от пользователя.
     """
     queryset = User.objects.all()
-    serializer_class = MyUserSerializer
+    serializer_class = FullUserSerializer
     pagination_class = LimitOffsetPagination
 
     def get_permissions(self):
@@ -245,15 +234,12 @@ class UsersViewSet(UserViewSet):
                 user=request.user, author=author)
             recipes = author.recipes.all()  # Получаем рецепты
             recipes_limit = request.query_params.get('recipes_limit', None)
-            try:  # Используем серилайзер для ограничения кол-ва рецептов
-                limited_recipes = SubscriptionWithRecipesSerializer(
-                ).get_recipes_with_limit(recipes, recipes_limit)
-            except serializers.ValidationError as e:
-                return Response(
-                    {"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
             user_serializer = SubscriptionWithRecipesSerializer(
                 author, context={
-                    'request': request, 'recipes': limited_recipes})
+                    'request': request,
+                    'recipes': recipes,
+                    'recipes_limit': recipes_limit  # Передаем лимит также
+                })
             return Response(
                 user_serializer.data, status=status.HTTP_201_CREATED)
         elif request.method == 'DELETE':

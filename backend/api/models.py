@@ -78,10 +78,10 @@ class Recipe(models.Model):
         Tag,
         related_name='recipes',
         verbose_name='Теги',)
-    pub_date = models.DateTimeField(auto_now_add=True, default=timezone.now)
+    pub_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ('pub_date', 'name', 'author')
+        ordering = ('-pub_date', 'name', 'author')
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
 
@@ -128,6 +128,10 @@ class BaseUserAndRecipeRelation(models.Model):
     class Meta:
         abstract = True
         ordering = ('user', 'recipe')
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'recipe'],
+                                    name='unique_%(class)s_items')
+        ]
 
     def __str__(self):
         return f"{self.user.username} - {self.recipe.name}"
@@ -139,10 +143,6 @@ class ShoppingCart(BaseUserAndRecipeRelation):
     class Meta(BaseUserAndRecipeRelation.Meta):
         verbose_name = 'Корзина покупок'
         verbose_name_plural = 'Корзины покупок'
-        constraints = [
-            models.UniqueConstraint(fields=['user', 'recipe'],
-                                    name='unique_shopping_cart_items')
-        ]
 
 
 class FavoriteRecipe(BaseUserAndRecipeRelation):
@@ -151,10 +151,6 @@ class FavoriteRecipe(BaseUserAndRecipeRelation):
     class Meta(BaseUserAndRecipeRelation.Meta):
         verbose_name = 'Избранный рецепт'
         verbose_name_plural = 'Избранные рецепты'
-        constraints = [
-            models.UniqueConstraint(fields=['user', 'recipe'],
-                                    name='unique_favorite_recipe_items')
-        ]
 
 
 class Subscription(models.Model):

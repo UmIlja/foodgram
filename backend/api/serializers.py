@@ -1,4 +1,3 @@
-from djoser.serializers import UserCreateSerializer
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
@@ -6,9 +5,9 @@ from .models import (FavoriteRecipe, Ingredient, IngredientRecipe, Recipe,
                      ShoppingCart, Subscription, Tag, User)
 
 
-class MyUserSerializer(serializers.ModelSerializer):
+class FullUserSerializer(serializers.ModelSerializer):
     """Serializer to manage user."""
-    avatar = Base64ImageField(required=False)
+    avatar = Base64ImageField()
 
     class Meta:
         model = User
@@ -19,21 +18,13 @@ class MyUserSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
-class CreateSerializer(UserCreateSerializer):
-    class Meta(UserCreateSerializer.Meta):
-        model = User
-        fields = (
-            'email', 'id', 'username', 'first_name', 'last_name', 'password'
-        )
-
-
-class UserAvatarSerializer(serializers.Serializer):
+class UserAvatarSerializer(FullUserSerializer):
     """Serializer of user avatar."""
-    avatar = Base64ImageField(required=True)
 
     class Meta:
         model = User
         fields = ('avatar',)
+        extra_kwargs = {'avatar': {'required': True}}
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -81,7 +72,7 @@ class RecipeMinifiedSerializer(serializers.ModelSerializer):
 
 class FullRecipeSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True)
-    author = MyUserSerializer(many=False)
+    author = FullUserSerializer(many=False)
     ingredients = IngredientsInRecipeFullSerializer(
         source='recipe_ingredients', many=True)
     image = Base64ImageField(required=True, allow_null=False)
@@ -287,7 +278,7 @@ class SubscriptionWithRecipesSerializer(serializers.ModelSerializer):
                 user=request.user, author=obj).exists()
         return False
 
-    def get_recipes_with_limit(self, recipes, recipes_limit):
+    def get_limited_recipes(self, recipes, recipes_limit):
         """Метод для ограничения количества рецептов."""
         if recipes_limit is not None:
             try:
@@ -300,10 +291,11 @@ class SubscriptionWithRecipesSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        # Получаем рецепты из контекста
         recipes = self.context.get('recipes', [])
-        representation['recipes'] = RecipeMinifiedSerializer(recipes,
-                                                             many=True).data
+        recipes_limit = self.context.get('recipes_limit', None)
+        limited_recipes = self.get_limited_recipes(recipes, recipes_limit)
+        representation['recipes'] = RecipeMinifiedSerializer(
+            limited_recipes, many=True).data
         # Обновляем кол-во рецептов
-        representation['recipes_count'] = len(recipes)
+        representation['recipes_count'] = len(limited_recipes)
         return representation
