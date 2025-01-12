@@ -79,8 +79,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
     pagination_class = LimitOffsetPagination
     permission_classes = (IsAuthorOrAuthOrReadOnlyPermission,)
     http_method_names = ('get', 'post', 'patch', 'delete',)
-    filter_backends = (DjangoFilterBackend,)
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
     filterset_class = RecipesFilter
+    search_fields = ('ingredients__name',)
 
     def get_serializer_class(self, action=None):
         if (action or self.action) in ('retrieve', 'list'):
