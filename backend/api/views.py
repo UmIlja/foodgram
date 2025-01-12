@@ -81,7 +81,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     http_method_names = ('get', 'post', 'patch', 'delete',)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
     filterset_class = RecipesFilter
-    search_fields = ('ingredients__name',)
+    search_fields = ('^ingredients__name',)
 
     def get_serializer_class(self, action=None):
         if (action or self.action) in ('retrieve', 'list'):

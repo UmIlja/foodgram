@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.utils import timezone
 
 from .constants import (INGREDIENT_NAME_MAX_LENGTH,
                         MEASUREMENT_UNIT_MAX_LENGTH, MIN_AMOUNT_VALUE,
@@ -77,9 +78,10 @@ class Recipe(models.Model):
         Tag,
         related_name='recipes',
         verbose_name='Теги',)
+    pub_date = models.DateTimeField(auto_now_add=True, default=timezone.now)
 
     class Meta:
-        ordering = ('name', 'author')
+        ordering = ('pub_date', 'name', 'author')
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
 
