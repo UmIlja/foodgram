@@ -18,8 +18,8 @@ from .filters import RecipesFilter
 from .models import (FavoriteRecipe, Ingredient, Recipe, ShoppingCart,
                      Subscription, Tag)
 from .permissions import IsAuthorOrAuthOrReadOnlyPermission
-from .serializers import (FullRecipeSerializer, IngredientSerializer,
-                          FullUserSerializer, RecipeMinifiedSerializer,
+from .serializers import (FullRecipeSerializer, FullUserSerializer,
+                          IngredientSerializer, RecipeMinifiedSerializer,
                           ShoppingCartSerializer, SubscribeSerializer,
                           SubscriptionWithRecipesSerializer, TagSerializer,
                           UserAvatarSerializer, WriteRecipeSerializer)
