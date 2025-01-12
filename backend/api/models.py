@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.utils import timezone
 
 from .constants import (INGREDIENT_NAME_MAX_LENGTH,
                         MEASUREMENT_UNIT_MAX_LENGTH, MIN_AMOUNT_VALUE,
