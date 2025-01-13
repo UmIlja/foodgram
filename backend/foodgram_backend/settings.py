@@ -10,8 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'any_key')
 
-DEBUG = True
-# os.getenv("DEBUG_MODE") == "False"
+os.getenv("DEBUG_MODE") == "False"
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost').split(',')
 
@@ -69,15 +68,10 @@ BASE_URL = "https://foodgram-ilja.sytes.net"
 AUTH_USER_MODEL = 'users.UserProfile'  # Profile user model
 
 
-# DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',  # Указываем, что используем SQLite
-#        'NAME': BASE_DIR / 'db.sqlite3',  # Путь к файлу базы данных
-#    }
-#}
 DATABASES = {
     'default': {
-        #для работы будет использоваться бэкенд postgresql
+        # Меняем настройку Django: теперь для работы будет использоваться
+        # бэкенд postgresql
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('POSTGRES_DB', 'django'),
         'USER': os.getenv('POSTGRES_USER', 'django'),
@@ -120,12 +114,18 @@ USE_L10N = True
 
 USE_TZ = True
 
-STATIC_URL = '/static/'  # Адрес для статических файтов
+
+# При планировании архитектуры было решено,
+# что статические файлы Django должны быть доступны по адресу /static/
+STATIC_URL = '/static/'
+# Указываем корневую директорию для сборки статических файлов;
+# в контейнере это будет /app/collected_static
 STATIC_ROOT = BASE_DIR / 'collected_static'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
+
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / '/media'
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -154,9 +154,9 @@ DJOSER = {
         "current_user": "api.serializers.FullUserSerializer",
     },
     "PERMISSIONS": {
-        "user": ["rest_framework.permissions.AllowAny"],  # Разрешаем доступ к пользователям всем
+        "user": ["rest_framework.permissions.AllowAny"],  # Разрешаем обзор к пользователям всем
         "user_create": ["rest_framework.permissions.AllowAny"],  # Разрешаем регистрацию всем
-        "user_list": ["rest_framework.permissions.AllowAny"],
+        "user_list": ["rest_framework.permissions.AllowAny"],  # Разрешаем обзор к пользователям всем
         "current_user": ["rest_framework.permissions.IsAuthenticated"]
     },
 }

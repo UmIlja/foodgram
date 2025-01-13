@@ -22,7 +22,7 @@ class Ingredient(models.Model):
         max_length=MEASUREMENT_UNIT_MAX_LENGTH)
 
     def save(self, *args, **kwargs):  # Уникальные независимо от регистра
-        self.name = self.name.upper()
+        self.name = self.name.lower()
         return super(Ingredient, self).save(*args, **kwargs)
 
     class Meta:

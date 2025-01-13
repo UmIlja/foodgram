@@ -141,5 +141,5 @@ jobs:
           sudo docker compose -f docker-compose.yml up -d  # Перезапускает все контейнеры в Docker Compose
           sleep 5
           sudo docker compose -f docker-compose.yml exec backend python manage.py migrate  # Выполняет миграции
-          sudo docker compose -f docker-compose.yml exec backend python manage.py collectstatic --noinput # Выполняет сбор статики
+          sudo docker compose -f docker-compose.yml exec backend python manage.py collectstatic # Выполняет сбор статики
           sudo docker compose -f docker-compose.yml exec backend cp -r /app/collected_static/. /static/static/
