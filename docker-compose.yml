@@ -21,8 +21,6 @@ services:
     volumes:
       - static:/static
       - media:/media
-    #command: >
-    #  sh -c "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn --bind 0.0.0.0:8000 foodgram_backend.wsgi:application"
 
   frontend:
     image: umilja/foodgram_frontend
@@ -35,7 +33,6 @@ services:
     image: umilja/foodgram_infra
     env_file: .env
     depends_on:
-      - db
       - backend
       - frontend
     volumes:
