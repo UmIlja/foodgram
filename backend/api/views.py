@@ -37,7 +37,7 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = IngredientSerializer
     permission_classes = [AllowAny]
     pagination_class = None
-    filter_backends = (DjangoFilterBackend, IngredientSearchFilter)
+    filter_backends = (DjangoFilterBackend, IngredientSearchFilter,)
     filterset_fields = ('name',)
     search_fields = ('name',)
 
@@ -68,7 +68,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     pagination_class = LimitOffsetPagination
     permission_classes = (IsAuthorOrAuthOrReadOnlyPermission,)
     http_method_names = ('get', 'post', 'patch', 'delete',)
-    filter_backends = (DjangoFilterBackend)
+    filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipesFilter
 
     def get_serializer_class(self, action=None):
