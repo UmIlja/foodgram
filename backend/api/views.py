@@ -39,7 +39,7 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     pagination_class = None
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     filterset_fields = ('name',)
-    search_fields = ('name',)
+    search_fields = ('^name',)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -68,8 +68,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
     pagination_class = LimitOffsetPagination
     permission_classes = (IsAuthorOrAuthOrReadOnlyPermission,)
     http_method_names = ('get', 'post', 'patch', 'delete',)
-    filter_backends = (DjangoFilterBackend,)
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     filterset_class = RecipesFilter
+    search_fields = ('^ingredients__name',)
 
     def get_serializer_class(self, action=None):
         if (action or self.action) in ('retrieve', 'list'):

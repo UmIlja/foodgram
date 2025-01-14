@@ -62,9 +62,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'foodgram_backend.wsgi.application'
 
 
-# BASE_URL = "https://foodgram-ilja.sytes.net"
-
-
 AUTH_USER_MODEL = 'users.UserProfile'  # Profile user model
 
 
@@ -116,9 +113,7 @@ USE_TZ = True
 
 
 STATIC_URL = '/static/'  # Адрес для статических файтов
-#STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_ROOT = BASE_DIR / 'collected_static'  # Корневая директория для сборки статических файлов
-#STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / '/media'
