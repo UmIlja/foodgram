@@ -14,7 +14,7 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
-from .filters import IngredientSearchFilter, RecipesFilter
+from .filters import RecipesFilter
 from .models import (FavoriteRecipe, Ingredient, Recipe, ShoppingCart,
                      Subscription, Tag)
 from .permissions import IsAuthorOrAuthOrReadOnlyPermission
@@ -68,7 +68,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     pagination_class = LimitOffsetPagination
     permission_classes = (IsAuthorOrAuthOrReadOnlyPermission,)
     http_method_names = ('get', 'post', 'patch', 'delete',)
-    filter_backends = (DjangoFilterBackend, IngredientSearchFilter,)
+    filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipesFilter
 
     def get_serializer_class(self, action=None):
