@@ -24,6 +24,8 @@ services:
   frontend:
     image: umilja/foodgram_frontend
     env_file: .env
+    depends_on:
+      - db
     command: cp -r /app/build/. /static/
     volumes:
       - static:/frontend_static
