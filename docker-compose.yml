@@ -24,7 +24,7 @@ services:
   frontend:
     image: umilja/foodgram_frontend
     env_file: .env
-    command: cp -r /app/build/. /frontend_static/
+    command: cp -r /app/build/. /static/
     volumes:
       - static:/frontend_static
   gateway:
@@ -34,7 +34,7 @@ services:
       - backend
       - frontend
     volumes:
-      - static:/staticfiles/
+      - static:/static
       - media:/media
     ports:
       - 8000:80

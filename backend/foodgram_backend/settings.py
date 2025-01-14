@@ -10,7 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'any_key')
 
-os.getenv("DEBUG_MODE") == "False"
+DEBUG = os.getenv("PRODUCTION_MODE") == "False"
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost').split(',')
 
@@ -62,7 +62,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'foodgram_backend.wsgi.application'
 
 
-BASE_URL = "https://foodgram-ilja.sytes.net"
+# BASE_URL = "https://foodgram-ilja.sytes.net"
 
 
 AUTH_USER_MODEL = 'users.UserProfile'  # Profile user model
@@ -115,13 +115,8 @@ USE_L10N = True
 USE_TZ = True
 
 
-# При планировании архитектуры было решено,
-# что статические файлы Django должны быть доступны по адресу /static/
-STATIC_URL = '/static/'
-# Указываем корневую директорию для сборки статических файлов;
-# в контейнере это будет /app/collected_static
-STATIC_ROOT = BASE_DIR / 'collected_static'
-
+STATIC_URL = '/static/'  # Адрес для статических файтов
+STATIC_ROOT = BASE_DIR / 'collected_static'  # Корневая директория для сборки статических файлов
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / '/media'
