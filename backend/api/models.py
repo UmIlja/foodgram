@@ -80,9 +80,13 @@ class Recipe(models.Model):
     pub_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ('-pub_date', 'name')
+        ordering = ('-pub_date',)
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
+
+    def favorite_count(self):
+        """Возвращает кол-во пользователей, добавивших рецепт в избранное."""
+        return self.favorite_items.count()
 
     def __str__(self):
         return self.name

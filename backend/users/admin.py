@@ -51,7 +51,8 @@ class RecipeAdmin(admin.ModelAdmin):
 
     @admin.display(description='Число добавлений в избранное')
     def in_favourite_count(self, obj):
-        return obj.shoppingcart_set.count()
+        """Возвращает количество добавлений рецепта в избранное."""
+        return obj.favorite_items.count()
 
 
 @admin.register(Ingredient)
