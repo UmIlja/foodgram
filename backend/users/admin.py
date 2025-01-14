@@ -41,32 +41,22 @@ class RecipeAdmin(admin.ModelAdmin):
     filter_horizontal = ('tags',)
     inlines = [IngredientInline]
 
-    # Для визуальной ясности выводим также изображение блюда
     @admin.display(description='Изображение блюда')
     def get_image(self, obj):
         if obj.image:
-            return mark_safe(
-                f'<img src={obj.image.url} width="50" height="60" />')
-
-    def get_readonly_fields(self, request, obj=None):
-        """Добавляем поле для отображения количества добавлений в избранное на странице редактирования."""
-        if obj:  # Если это страница редактирования
-            return super().get_readonly_fields(request, obj) + ('in_favourite_count',)
-        return super().get_readonly_fields(request, obj)
+            return mark_safe(f'<img src={obj.image.url} width="50" height="60" />')
 
     @admin.display(description='Число добавлений в избранное')
     def in_favourite_count(self, obj):
         """Возвращает количество добавлений рецепта в избранное."""
-        return obj.favorite_items.count()
-
-    def in_favourite_count_display(self, obj):
-        """Метод для отображения количества добавлений в избранное."""
-        return self.in_favourite_count(obj)
+        return obj.favorite_items.count()  # Убедитесь, что это правильное имя
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
         """Добавляем контекст для отображения количества добавлений в избранное."""
         extra_context = extra_context or {}
-        extra_context['in_favourite_count'] = self.in_favourite_count_display(self.get_object(request, object_id))
+        recipe = self.get_object(request, object_id)
+        if recipe:
+            extra_context['in_favourite_count'] = self.in_favourite_count(recipe)
         return super().change_view(request, object_id, form_url, extra_context=extra_context)
 
 
