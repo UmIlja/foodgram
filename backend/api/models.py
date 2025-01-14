@@ -86,7 +86,7 @@ class Recipe(models.Model):
 
     def favorite_count(self):
         """Возвращает кол-во пользователей, добавивших рецепт в избранное."""
-        return self.favorite_items.count()
+        return self.favoriterecipe_items.count()
 
     def __str__(self):
         return self.name

@@ -49,7 +49,7 @@ class RecipeAdmin(admin.ModelAdmin):
     @admin.display(description='Число добавлений в избранное')
     def in_favourite_count(self, obj):
         """Возвращает количество добавлений рецепта в избранное."""
-        return obj.favorite_items.count()  # Убедитесь, что это правильное имя
+        return obj.favorite_count()
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
         """Добавляем контекст для отображения количества добавлений в избранное."""
