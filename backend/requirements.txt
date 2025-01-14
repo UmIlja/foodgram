@@ -17,3 +17,4 @@ pytest-django==4.4.0
 pytest-pythonpath==0.7.3
 python-dotenv==1.0.1
 PyYAML==6.0
+pandas==1.5.0
