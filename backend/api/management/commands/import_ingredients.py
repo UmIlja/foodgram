@@ -1,4 +1,4 @@
-import pandas as pd
+import csv
 from api.models import Ingredient
 from django.core.management.base import BaseCommand
 
@@ -11,23 +11,31 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         csv_file = kwargs['csv_file']
-        df = pd.read_csv(csv_file, header=None)
 
-        for index, row in df.iterrows():
-            try:
-                ingredient, created = Ingredient.objects.get_or_create(
-                    name=row[0].strip(),  # Убираем лишние пробелы
-                    defaults={'measurement_unit': row[1].strip()}
-                )
-                if created:
-                    self.stdout.write(self.style.SUCCESS(
-                        f'Ingred "{ingredient.name}" imported successfully!'))
-                else:
-                    self.stdout.write(self.style.WARNING(
-                        f'Ingred "{ingredient.name}" already exists.'))
-            except Exception as e:
-                self.stdout.write(self.style.ERROR(
-                    f'Error importing ingredient "{row[0]}": {str(e)}'))
+        # Открываем CSV файл и читаем его
+        with open(csv_file, newline='', encoding='utf-8') as file:
+            reader = csv.reader(file)
+
+            for row in reader:
+                if len(row) < 2:  # Проверяем, что в строке достаточно данных
+                    self.stdout.write(self.style.ERROR(
+                        f'Error importing ingredient: row does not contain enough data: {row}'))
+                    continue
+
+                try:
+                    ingredient, created = Ingredient.objects.get_or_create(
+                        name=row[0].strip(),  # Убираем лишние пробелы
+                        defaults={'measurement_unit': row[1].strip()}
+                    )
+                    if created:
+                        self.stdout.write(self.style.SUCCESS(
+                            f'Ingredient "{ingredient.name}" imported successfully!'))
+                    else:
+                        self.stdout.write(self.style.WARNING(
+                            f'Ingredient "{ingredient.name}" already exists.'))
+                except Exception as e:
+                    self.stdout.write(self.style.ERROR(
+                        f'Error importing ingredient "{row[0]}": {str(e)}'))
 
         self.stdout.write(self.style.SUCCESS(
             'All ingredients imported successfully!'))
