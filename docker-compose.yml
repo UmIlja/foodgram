@@ -18,18 +18,16 @@ services:
     depends_on:
       - db
     volumes:
-      - static:/backend_static
+      - static:/static
       - media:/media
 
   frontend:
     image: umilja/foodgram_frontend
-    env_file: .env
-    depends_on:
-      - db
-      - backend
+    env_file: .env 
     command: cp -r /app/build/. /static/
     volumes:
-      - static:/frontend_static
+      - static:/static
+
   gateway:
     image: umilja/foodgram_infra
     env_file: .env
