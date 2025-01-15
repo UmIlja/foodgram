@@ -16,7 +16,7 @@ class Ingredient(models.Model):
     name = models.CharField(
         'Название',
         max_length=INGREDIENT_NAME_MAX_LENGTH,
-        unique=True)
+        unique=True,)
     measurement_unit = models.CharField(
         'Единицы измерения',
         max_length=MEASUREMENT_UNIT_MAX_LENGTH)
@@ -37,8 +37,12 @@ class Ingredient(models.Model):
 class Tag(models.Model):
     """Модель Тега."""
 
-    name = models.CharField(max_length=TAG_DATA_MAX_LENGTH, unique=True)
+    name = models.CharField(
+        'Тег',
+        max_length=TAG_DATA_MAX_LENGTH,
+        unique=True)
     slug = models.SlugField(
+        'Слаг тега',
         max_length=TAG_DATA_MAX_LENGTH,
         unique=True,
         null=False)
@@ -86,7 +90,7 @@ class Recipe(models.Model):
 
     def favorite_count(self):
         """Возвращает кол-во пользователей, добавивших рецепт в избранное."""
-        return self.favoriterecipe_items.count()
+        return self.favoriterecipe.count()
 
     def __str__(self):
         return self.name
@@ -96,16 +100,18 @@ class IngredientRecipe(models.Model):
     """Модель ингридиентов в рецепте."""
 
     recipe = models.ForeignKey(
+        'Рецепт',
         Recipe,
         related_name='recipe_ingredients',
         on_delete=models.CASCADE)
     ingredient = models.ForeignKey(
+        'Ингредиент',
         Ingredient,
         related_name='recipe_ingredients',
         on_delete=models.CASCADE)
     # Дополнительные поля:
     amount = models.PositiveSmallIntegerField(
-        'Количество ингридиента в рецепте',
+        'Количество ингредиента в рецепте',
         default=1,
         validators=[MinValueValidator(MIN_AMOUNT_VALUE)])
 

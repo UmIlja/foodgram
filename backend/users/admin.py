@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
+from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
 from rest_framework.authtoken.models import Token
 
@@ -51,13 +52,19 @@ class RecipeAdmin(admin.ModelAdmin):
         """Возвращает количество добавлений рецепта в избранное."""
         return obj.favorite_count()
 
-    def change_view(self, request, object_id, form_url='', extra_context=None):
-        """Добавляем контекст для отображения количества добавлений в избранное."""
-        extra_context = extra_context or {}
-        recipe = self.get_object(request, object_id)
-        if recipe:
-            extra_context['in_favourite_count'] = self.in_favourite_count(recipe)
-        return super().change_view(request, object_id, form_url, extra_context=extra_context)
+    #def change_view(self, request, object_id, form_url='', extra_context=None):
+    #    """Добавляем контекст для отображения количества добавлений в избранное."""
+    #    extra_context = extra_context or {}
+    #    recipe = self.get_object(request, object_id)
+    #    if recipe:
+    #       extra_context['in_favourite_count'] = self.in_favourite_count(recipe)
+    #    return super().change_view(request, object_id, form_url, extra_context=extra_context)
+    
+    def save_model(self, request, obj, form, change):
+        """Переопределяем метод сохранения модели для проверки наличия ингредиентов."""
+        if not form.cleaned_data.get('ingredients'):
+            raise ValidationError("Рецепт должен содержать хотя бы один ингредиент.")
+        super().save_model(request, obj, form, change)
 
 
 @admin.register(Ingredient)

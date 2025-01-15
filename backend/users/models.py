@@ -13,23 +13,26 @@ class UserProfile(AbstractUser):
     """
 
     email = models.EmailField(
-        max_length=EMAIL_MAX_LENGTH, unique=True, blank=False, null=False
+        'Эл.почта',
+        max_length=EMAIL_MAX_LENGTH,
+        unique=True, blank=False, null=False
     )
     username = models.CharField(
+        'Логин',
         max_length=NAMES_FIELD_MAX_LENGTH,
         unique=True, blank=False, null=False,
         validators=[UnicodeUsernameValidator()]
     )
     first_name = models.CharField(
-        max_length=NAMES_FIELD_MAX_LENGTH, blank=False, null=False
+        'Имя', max_length=NAMES_FIELD_MAX_LENGTH, blank=False, null=False
     )
     last_name = models.CharField(
-        max_length=NAMES_FIELD_MAX_LENGTH, blank=False, null=False
+        'Фамилия', max_length=NAMES_FIELD_MAX_LENGTH, blank=False, null=False
     )
     avatar = models.ImageField(
-        upload_to='users/', blank=True, null=True
+        'Аватар', upload_to='users/', blank=True, null=True
     )
-    is_subscribed = models.BooleanField(default=False)
+    is_subscribed = models.BooleanField('Подписан ли', default=False)
 
     class Meta:
         ordering = ('username',)
