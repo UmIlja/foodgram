@@ -5,8 +5,6 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
 from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound
@@ -125,24 +123,17 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'], url_path='download_shopping_cart')
     def download_shopping_cart(self, request):
-        """Получаем файл со списком покупок в формате PDF."""
+        """Получаем файл со списком покупок в текстовом формате."""
         shopping_cart = self.get_shopping_cart(request.user)
-        # Создание HTTP-ответа с типом контента PDF
-        response = HttpResponse(content_type='application/pdf')
+        # Создание HTTP-ответа с типом контента текстового файла
+        response = HttpResponse(content_type='text/plain')
         response['Content-Disposition'] = (
-            'attachment; filename="shopping_cart.pdf"')
-        p = canvas.Canvas(response, pagesize=letter)   # Создание PDF-файла
-        width, height = letter
-        p.drawString(100, height - 50, "Список покупок")  # Заголовок
-        p.drawString(100, height - 80, "Название")  # Заголовки столбцов
-        p.drawString(300, height - 80, "Количество")
-        y = height - 100  # Начальная позиция для записи данных
-        for item in shopping_cart:
-            p.drawString(100, y, item['name'])
-            p.drawString(300, y, str(item['quantity']))
-            y -= 20  # Переход к следующей строке
-        p.showPage()  # Завершение PDF-файла
-        p.save()
+            'attachment; filename="shopping_cart.txt"')
+        # Запись данных в текстовый файл
+        lines = ["Список покупок:\n", "Название\tКоличество\n"]  # Заголовки
+        for item in shopping_cart:  # Запись данных
+            lines.append(f"{item['name']}\t{item['quantity']}\n")
+        response.writelines(lines)  # Запись всех строк в ответ
         return response
 
     def get_shopping_cart(self, user):

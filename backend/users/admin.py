@@ -34,7 +34,7 @@ class IngredientInline(admin.StackedInline):
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'get_image', 'author')
+    list_display = ('name', 'get_image', 'author', 'in_favourite_count')
     list_select_related = ('author',)
     list_filter = ['tags']
     search_fields = ('name', 'author__username')
