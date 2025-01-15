@@ -204,15 +204,17 @@ class WriteRecipeSerializer(serializers.ModelSerializer):
         tags = validated_data.pop('tags', None)
         instance.tags.set(tags)
         ingredients = validated_data.pop('ingredients', None)
-
-        # Проверка на количество ингредиентов
-        if ingredients is None or len(ingredients) < 1:
-            raise serializers.ValidationError(
-                'Рецепт должен содержать хотя бы один ингредиент.')
         # Обновляем поля рецепта
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
+        # Если изображение не передано, оставляем текущее значение!
+        if 'image' not in validated_data:
+            validated_data['image'] = instance.image
         instance.save()
+        # Обновляем ингредиенты
+        if ingredients is None or len(ingredients) < 1:
+            raise serializers.ValidationError(
+                'Рецепт должен содержать хотя бы один ингредиент.')
         instance.ingredients.clear()  # Удаляем старые ингредиенты
         self.create_or_update_ingredients(instance, ingredients)
         return instance
