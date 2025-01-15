@@ -100,20 +100,20 @@ class IngredientRecipe(models.Model):
     """Модель ингридиентов в рецепте."""
 
     recipe = models.ForeignKey(
-        'Рецепт',
         Recipe,
         related_name='recipe_ingredients',
-        on_delete=models.CASCADE)
+        on_delete=models.CASCADE,
+        verbose_name='Рецепт',)
     ingredient = models.ForeignKey(
-        'Ингредиент',
         Ingredient,
         related_name='recipe_ingredients',
-        on_delete=models.CASCADE)
+        on_delete=models.CASCADE,
+        verbose_name='Ингредиент',)
     # Дополнительные поля:
     amount = models.PositiveSmallIntegerField(
-        'Количество ингредиента в рецепте',
         default=1,
-        validators=[MinValueValidator(MIN_AMOUNT_VALUE)])
+        validators=[MinValueValidator(MIN_AMOUNT_VALUE)],
+        verbose_name='Количество ингредиента в рецепте',)
 
     class Meta:
         ordering = ('recipe', 'ingredient',)
