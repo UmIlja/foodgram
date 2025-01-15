@@ -129,8 +129,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         response = HttpResponse(content_type='text/plain')
         response['Content-Disposition'] = (
             'attachment; filename="shopping_cart.txt"')
-        name_width = 30  # Ширина для названия
-        quantity_width = 10  # Ширина для количества
+        name_width = 40  # Ширина для названия
+        quantity_width = 15  # Ширина для количества
         # Запись данных в текстовый файл
         lines = [
             "Список покупок:\n", "Название".ljust(name_width) + "Количество\n"]

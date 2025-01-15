@@ -34,7 +34,7 @@ class IngredientInline(admin.StackedInline):
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'get_image', 'author', 'in_favourite_count')
+    list_display = ('name', 'get_image', 'author', 'in_favourite_count')  # Добавляем in_favourite_count
     list_select_related = ('author',)
     list_filter = ['tags']
     search_fields = ('name', 'author__username')
@@ -45,22 +45,14 @@ class RecipeAdmin(admin.ModelAdmin):
     @admin.display(description='Изображение блюда')
     def get_image(self, obj):
         if obj.image:
-            return mark_safe(f'<img src={obj.image.url} width="50" height="60" />')
+            return mark_safe(f'<img src="{obj.image.url}" width="50" height="60" />')
+        return None
 
     @admin.display(description='Число добавлений в избранное')
     def in_favourite_count(self, obj):
         """Возвращает количество добавлений рецепта в избранное."""
-        if obj.favorite_count:
-            return obj.favorite_count()
+        return obj.favorite_count()  # Вызываем метод
 
-    #def change_view(self, request, object_id, form_url='', extra_context=None):
-    #    """Добавляем контекст для отображения количества добавлений в избранное."""
-    #    extra_context = extra_context or {}
-    #    recipe = self.get_object(request, object_id)
-    #    if recipe:
-    #       extra_context['in_favourite_count'] = self.in_favourite_count(recipe)
-    #    return super().change_view(request, object_id, form_url, extra_context=extra_context)
-    
     def save_related(self, request, obj, form, change):
         """Проверяем наличие ингредиентов перед сохранением."""
         super().save_related(request, obj, form, change)
