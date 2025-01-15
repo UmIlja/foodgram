@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
@@ -32,9 +33,23 @@ class IngredientInline(admin.StackedInline):
     fields = ('ingredient', 'amount')
 
 
+class RecipeAdminForm(forms.ModelForm):
+    class Meta:
+        model = Recipe
+        fields = '__all__'
+
+    def clean(self):
+        cleaned_data = super().clean()
+        ingredients = cleaned_data.get('ingredients')
+
+        if not ingredients:
+            raise forms.ValidationError("Рецепт должен содержать хотя бы один ингредиент.")
+
+
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'get_image', 'author', 'in_favourite_count')  # Добавляем in_favourite_count
+    form = RecipeAdminForm
+    list_display = ('name', 'get_image', 'author', 'in_favourite_count')
     list_select_related = ('author',)
     list_filter = ['tags']
     search_fields = ('name', 'author__username')
@@ -51,13 +66,7 @@ class RecipeAdmin(admin.ModelAdmin):
     @admin.display(description='Число добавлений в избранное')
     def in_favourite_count(self, obj):
         """Возвращает количество добавлений рецепта в избранное."""
-        return obj.favorite_count()  # Вызываем метод
-
-    def save_related(self, request, obj, form, change):
-        """Проверяем наличие ингредиентов перед сохранением."""
-        super().save_related(request, obj, form, change)
-        if not obj.recipe_ingredients.exists():
-            raise ValidationError("Рецепт должен содержать хотя бы один ингредиент.")
+        return obj.favorite_count()
 
 
 @admin.register(Ingredient)
