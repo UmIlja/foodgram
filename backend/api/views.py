@@ -12,7 +12,7 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
-from .filters import RecipesFilter
+from .filters import IngredientSearchFilter, RecipesFilter
 from .models import (FavoriteRecipe, Ingredient, Recipe, ShoppingCart,
                      Subscription, Tag)
 from .permissions import IsAuthorOrAuthOrReadOnlyPermission
@@ -35,9 +35,8 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = IngredientSerializer
     permission_classes = [AllowAny]
     pagination_class = None
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
-    filterset_fields = ('name',)
-    search_fields = ('name',)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = IngredientSearchFilter
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -132,12 +131,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
         name_width = 50  # Ширина для названия
         quantity_width = 10  # Ширина для количества
         lines = [  # Запись данных в текстовый файл
-            "Список покупок:\n", "Название".ljust(name_width) + "Количество\n"]
+            "<<<СПИСОК ПОКУПОК>>>\n",
+            "НАЗВАНИЕ".ljust(name_width) + "КОЛИЧЕСТВО\n"]
         for item in shopping_cart:
             # Форматируем строки с выравниванием
             lines.append(
                 f"{item['name'].ljust(name_width)}"
-                f"{str(item['quantity']).ljust(quantity_width)}\n"
+                f"{str(item['quantity']).rjust(quantity_width)}\n"
             )
         response.writelines(lines)  # Запись всех строк в ответ
         return response
