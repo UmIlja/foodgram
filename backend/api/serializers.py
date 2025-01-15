@@ -296,6 +296,5 @@ class SubscriptionWithRecipesSerializer(serializers.ModelSerializer):
         limited_recipes = self.get_limited_recipes(recipes, recipes_limit)
         representation['recipes'] = RecipeMinifiedSerializer(
             limited_recipes, many=True).data
-        # Обновляем кол-во рецептов
         representation['recipes_count'] = len(limited_recipes)
         return representation

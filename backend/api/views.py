@@ -128,10 +128,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
         response = HttpResponse(content_type='text/plain')
         response['Content-Disposition'] = (
             'attachment; filename="shopping_cart.txt"')
-        name_width = 50  # Ширина для названия
+        name_width = 40  # Ширина для названия
         quantity_width = 10  # Ширина для количества
         lines = [  # Запись данных в текстовый файл
-            "<<<СПИСОК ПОКУПОК>>>\n",
+            "            <<<СПИСОК ПОКУПОК>>>\n",
             "НАЗВАНИЕ".ljust(name_width) + "КОЛИЧЕСТВО\n"]
         for item in shopping_cart:
             # Форматируем строки с выравниванием
@@ -175,12 +175,22 @@ class SubscriptionViewSet(viewsets.GenericViewSet):
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         page = self.paginate_queryset(queryset)  # Применяем пагинацию
-
+        # Получаем рецепты для всех пользователей
+        recipes = Recipe.objects.filter(author__in=queryset)
         if page is not None:
-            serializer = self.get_serializer(page, many=True)
+            serializer = self.get_serializer(
+                page,
+                many=True,
+                context={'recipes': recipes,
+                         'recipes_limit': request.query_params.get(
+                             'recipes_limit')})
             return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
+        serializer = self.get_serializer(
+            queryset,
+            many=True,
+            context={'recipes': recipes,
+                     'recipes_limit': request.query_params.get(
+                         'recipes_limit')})
         return Response(serializer.data)
 
 
