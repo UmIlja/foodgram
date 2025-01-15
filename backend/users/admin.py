@@ -60,11 +60,11 @@ class RecipeAdmin(admin.ModelAdmin):
     #       extra_context['in_favourite_count'] = self.in_favourite_count(recipe)
     #    return super().change_view(request, object_id, form_url, extra_context=extra_context)
     
-    def save_model(self, request, obj, form, change):
-        """Переопределяем метод сохранения модели для проверки наличия ингредиентов."""
-        if not form.cleaned_data.get('ingredients'):
+    def save_related(self, request, obj, form, change):
+        """Проверяем наличие ингредиентов перед сохранением."""
+        super().save_related(request, obj, form, change)
+        if not obj.recipe_ingredients.exists():
             raise ValidationError("Рецепт должен содержать хотя бы один ингредиент.")
-        super().save_model(request, obj, form, change)
 
 
 @admin.register(Ingredient)
