@@ -114,7 +114,7 @@ class WriteRecipeSerializer(serializers.ModelSerializer):
         child=serializers.IntegerField(),
         required=True
     )
-    image = Base64ImageField(required=True, allow_null=False)
+    image = Base64ImageField(required=False, allow_null=True)
     name = serializers.CharField(max_length=256, required=True)
     text = serializers.CharField(required=True)
     cooking_time = serializers.IntegerField(min_value=1, required=True)
@@ -127,7 +127,8 @@ class WriteRecipeSerializer(serializers.ModelSerializer):
         read_only_fields = ('author',)
 
     def validate(self, data):
-        if 'image' not in data or not data['image']:
+        # Убираем проверку на наличие изображения
+        if 'image' in data and not data['image']:
             raise serializers.ValidationError('Поле image обязательно.')
 
         tags = data.get('tags')
@@ -204,10 +205,9 @@ class WriteRecipeSerializer(serializers.ModelSerializer):
         tags = validated_data.pop('tags', None)
         instance.tags.set(tags)
         ingredients = validated_data.pop('ingredients', None)
-        # Обновляем поля рецепта
         for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        # Если изображение не передано, оставляем текущее значение!
+            setattr(instance, attr, value)  # Обновляем поля рецепта
+        # Если изображение не передано, оставляем текущее значение
         if 'image' not in validated_data:
             validated_data['image'] = instance.image
         instance.save()
