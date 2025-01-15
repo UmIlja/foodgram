@@ -39,7 +39,7 @@ class RecipeAdminForm(forms.ModelForm):
         fields = '__all__'
 
     def clean(self):
-        cleaned_data = super().clean()
+        super().clean()
         # Получаем объект рецепта
         recipe = self.instance
         if not recipe.recipe_ingredients.exists():
