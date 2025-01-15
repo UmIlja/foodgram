@@ -43,7 +43,8 @@ class RecipeAdminForm(forms.ModelForm):
         # Получаем объект рецепта
         recipe = self.instance
         if not recipe.recipe_ingredients.exists():
-            raise ValidationError("Рецепт должен содержать хотя бы один ингредиент.")
+            raise ValidationError(
+                "Рецепт должен содержать хотя бы один ингредиент.")
 
 
 @admin.register(Recipe)
@@ -60,7 +61,8 @@ class RecipeAdmin(admin.ModelAdmin):
     @admin.display(description='Изображение блюда')
     def get_image(self, obj):
         if obj.image:
-            return mark_safe(f'<img src="{obj.image.url}" width="50" height="60" />')
+            return mark_safe(
+                f'<img src="{obj.image.url}" width="50" height="60" />')
         return None
 
     @admin.display(description='Число добавлений в избранное')
