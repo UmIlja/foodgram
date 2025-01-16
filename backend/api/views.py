@@ -131,13 +131,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
         name_width = 35  # Ширина для названия
         quantity_width = 10  # Ширина для количества
         lines = [  # Запись данных в текстовый файл
-            "         <<<СПИСОК ПОКУПОК>>>\n",
+            "          <<<СПИСОК ПОКУПОК>>>\n",
             "НАЗВАНИЕ".ljust(name_width) + "КОЛИЧЕСТВО\n"]
         for item in shopping_cart:
             # Форматируем строки с выравниванием
             lines.append(
                 f"{item['name'].ljust(name_width)}"
-                f"{str(item['quantity']).rjust(quantity_width)}\n"
+                f"{str(item['quantity']).ljust(quantity_width)}\n"
             )
         response.writelines(lines)  # Запись всех строк в ответ
         return response
