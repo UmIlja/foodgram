@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
@@ -26,10 +27,20 @@ class UserProfileAdmin(admin.ModelAdmin):
     fields = ('email', 'username', 'first_name', 'last_name', 'password')
 
 
+class IngredientRecipeInlineFormset(forms.BaseInlineFormSet):
+    def clean(self):
+        super().clean()
+        # Проверяем, есть ли хотя бы один ингредиент
+        if not any(form.cleaned_data and form.cleaned_data[0].get(
+            'ingredient') for form in self.forms):
+            raise ValidationError(
+                "Рецепт должен содержать хотя бы один ингредиент.")
+
 class IngredientInline(admin.StackedInline):
     model = IngredientRecipe
     extra = 1
     fields = ('ingredient', 'amount')
+    formset = IngredientRecipeInlineFormset
 
 
 @admin.register(Recipe)
@@ -53,19 +64,6 @@ class RecipeAdmin(admin.ModelAdmin):
     def in_favourite_count(self, obj):
         """Возвращает количество добавлений рецепта в избранное."""
         return obj.favorite_count()
-    
-    def save_model(self, request, obj, form, change):
-        # Сохраняем рецепт
-        try:
-            super().save_model(request, obj, form, change)
-            # Проверяем наличие ингредиентов
-            if not obj.recipe_ingredients.exists():
-                raise ValidationError(
-                    "Рецепт должен содержать хотя бы один ингредиент.")
-        except ValidationError as e:
-            # Обработка ошибки валидации
-            form.add_error(None, e)
-            return
 
 
 @admin.register(Ingredient)
