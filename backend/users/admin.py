@@ -31,10 +31,10 @@ class IngredientRecipeInlineFormset(forms.BaseInlineFormSet):
     def clean(self):
         super().clean()
         # Проверяем, есть ли хотя бы один ингредиент
-        if not any(form.cleaned_data and form.cleaned_data[0].get(
+        if not any(form.cleaned_data.get(
             'ingredient') for form in self.forms if form.cleaned_data):
             raise ValidationError(
-                "Рецепт должен содержать хотя бы один ингредиент.")
+                "Пожалуйста, добавьте хотя бы один ингредиент.")
 
 
 class IngredientInline(admin.StackedInline):
