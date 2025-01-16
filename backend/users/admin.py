@@ -33,22 +33,8 @@ class IngredientInline(admin.StackedInline):
     fields = ('ingredient', 'amount')
 
 
-class RecipeAdminForm(forms.ModelForm):
-    class Meta:
-        model = Recipe
-        fields = '__all__'
-
-    def clean(self):
-        super().clean()
-        ingredients = self.data.getlist('ingredientrecipe_set-0-ingredient')
-        if not any(ingredients):
-            raise ValidationError(
-                "Рецепт должен содержать хотя бы один ингредиент.")
-
-
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    form = RecipeAdminForm
     list_display = ('name', 'get_image', 'author', 'in_favourite_count')
     list_select_related = ('author',)
     list_filter = ['tags']

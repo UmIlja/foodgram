@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
 
@@ -119,6 +120,11 @@ class IngredientRecipe(models.Model):
         ordering = ('recipe', 'ingredient',)
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты в рецепте'
+
+    def clean(self):
+        super().clean()
+        if not self.ingredient or not self.amount:
+            raise ValidationError("Ингредиент и количество должны быть указаны.")
 
     def __str__(self):
         return f'{self.ingredient}'
