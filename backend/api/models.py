@@ -89,13 +89,6 @@ class Recipe(models.Model):
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
 
-    def clean(self):
-        super().clean()
-        # Проверяем, есть ли связанные ингредиенты
-        if not self.recipe_ingredients.exists():
-            raise ValidationError(
-                "Рецепт должен содержать хотя бы один ингредиент.")
-
     def favorite_count(self):
         """Возвращает кол-во пользователей, добавивших рецепт в избранное."""
         return self.favoriterecipe_items.count()
