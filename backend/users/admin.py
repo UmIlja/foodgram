@@ -1,4 +1,3 @@
-from django import forms
 from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
@@ -54,6 +53,12 @@ class RecipeAdmin(admin.ModelAdmin):
     def in_favourite_count(self, obj):
         """Возвращает количество добавлений рецепта в избранное."""
         return obj.favorite_count()
+    
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        if not obj.recipe_ingredients.exists():
+            raise ValidationError(
+                "Рецепт должен содержать хотя бы один ингредиент.")
 
 
 @admin.register(Ingredient)
