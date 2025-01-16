@@ -39,13 +39,11 @@ class RecipeAdminForm(forms.ModelForm):
         fields = '__all__'
 
     def clean(self):
-        form = super().clean()
-        # Получаем объект рецепта
-        recipe = self.instance
-        if not recipe.recipe_ingredients.exists():
+        super().clean()
+        ingredients = self.data.getlist('ingredientrecipe_set-0-ingredient')
+        if not any(ingredients):
             raise ValidationError(
                 "Рецепт должен содержать хотя бы один ингредиент.")
-        return form
 
 
 @admin.register(Recipe)
