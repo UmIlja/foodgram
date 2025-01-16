@@ -124,7 +124,8 @@ class IngredientRecipe(models.Model):
     def clean(self):
         super().clean()
         if not self.ingredient or not self.amount:
-            raise ValidationError("Ингредиент и количество должны быть указаны.")
+            raise ValidationError(
+                "Ингредиент и количество должны быть указаны.")
 
     def __str__(self):
         return f'{self.ingredient}'
