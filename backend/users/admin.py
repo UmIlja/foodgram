@@ -36,7 +36,7 @@ class IngredientRecipeInlineFormset(forms.BaseInlineFormSet):
             raise ValidationError(
                 "Пожалуйста, добавьте хотя бы один ингредиент.")
         # Проверяем, что не все формы пустые
-        if all(not form.cleaned_data for form in self.forms):
+        if all(form.cleaned_data.get('ingredient') == '' for form in self.forms):
             raise ValidationError(
                 "Пожалуйста, добавьте хотя бы один ингредиент.")
 
