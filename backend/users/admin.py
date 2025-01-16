@@ -55,10 +55,17 @@ class RecipeAdmin(admin.ModelAdmin):
         return obj.favorite_count()
     
     def save_model(self, request, obj, form, change):
-        super().save_model(request, obj, form, change)
-        if not obj.recipe_ingredients.exists():
-            raise ValidationError(
-                "Рецепт должен содержать хотя бы один ингредиент.")
+        # Сохраняем рецепт
+        try:
+            super().save_model(request, obj, form, change)
+            # Проверяем наличие ингредиентов
+            if not obj.recipe_ingredients.exists():
+                raise ValidationError(
+                    "Рецепт должен содержать хотя бы один ингредиент.")
+        except ValidationError as e:
+            # Обработка ошибки валидации
+            form.add_error(None, e)
+            return
 
 
 @admin.register(Ingredient)
