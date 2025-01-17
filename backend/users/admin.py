@@ -30,13 +30,12 @@ class UserProfileAdmin(admin.ModelAdmin):
 class IngredientRecipeInlineFormset(forms.BaseInlineFormSet):
     def clean(self):
         super().clean()
-        # Проверяем, есть ли хотя бы один ингредиент
-        if not any(form.cleaned_data.get(
-            'ingredient') for form in self.forms if form.cleaned_data):
-            raise ValidationError(
-                "Пожалуйста, добавьте хотя бы один ингредиент.")
-        # Проверяем, что не все формы пустые
-        if all(form.cleaned_data.get('ingredient') == '' for form in self.forms):
+        # Проверяем, есть ли хотя бы один ингредиент, который не помечен для удаления
+        if not any(
+            form.cleaned_data.get('ingredient') and 
+            not form.cleaned_data.get('DELETE') 
+            for form in self.forms
+        ):
             raise ValidationError(
                 "Пожалуйста, добавьте хотя бы один ингредиент.")
 
