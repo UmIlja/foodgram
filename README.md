@@ -55,6 +55,7 @@ python3 manage.py runserver
 ### Docker
 ### Nginx
 ### Gunicorn
+### GitHub Actions
 
 # Автор: Илья Е.
 ## Санкт-Петербург 2025
